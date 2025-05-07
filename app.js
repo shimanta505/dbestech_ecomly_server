@@ -14,8 +14,13 @@ app.use(cors());
 //app.options('/api/*',cors());
 
 
+
 const hostname = env.HOST;
 const port = env.PORT;
+const api = env.API_URL;
+
+const authRouter = require('./routes/auth');
+app.use(`${api}/`,authRouter);
 
 mongoose.set('debug',true);
 
