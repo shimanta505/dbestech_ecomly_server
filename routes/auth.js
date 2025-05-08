@@ -1,13 +1,28 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/login',(req,res)=>{
-    return res.status[201];
-});
+const authController = require('../controllers/auth_controller');
 
-router.get('/info',(req,res)=>
-res.status(201).json({'name': 'shimanta','age': 20})
+router.post('/login',(req,res)=> authController.login());
+
+
+router.post('/register',(req,res)=>
+    authController.register()
 );
+
+router.post('/forgot-password',(req,res)=>
+    authController.forgotPassword()
+);
+
+router.post('/verify-otp',(req,res)=>
+    authController.verifyPasswordResetOtp()
+);
+
+router.post('/reset-password',(req,res)=>
+    authController.resetPassword()
+);
+
+
 //router.get()
 
 module.exports = router;
