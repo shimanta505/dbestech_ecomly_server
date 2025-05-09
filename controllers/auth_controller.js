@@ -4,7 +4,21 @@ const {validationResult} = require('express-validator');
 const {User} = require('../models/user');
 const bcrypt = require('bcryptjs');
 
-exports.login =async function(req,res){return res.status(201);};
+exports.login =async function(req,res){
+    try{
+        const {email,password} = req.body;
+        const user = await User.findOne({email: email});
+
+        if(!user){
+
+            return res.status(404).json({message: 'user not found \n check your email and try again.'});
+        }else if(!bcrypt.compareSync(password,user.passwordHash)){
+           return res.status(400).json({message: 'incorrect password'});
+        }
+    }catch(error){
+        return res.status(500).json({type: error.name,message: error.message});
+    }
+};
 
 exports.register = async function(req,res){
     const errors = validationResult(req);
