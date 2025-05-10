@@ -5,6 +5,7 @@ const {User} = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { token } = require('morgan');
+const mailSender = require('../helpers/email_sender');
 
 exports.login =async function(req,res){
     try{
@@ -12,7 +13,6 @@ exports.login =async function(req,res){
         const user = await User.findOne({email: email});
 
         if(!user){
-
             return res.status(404).json({message: 'user not found \n check your email and try again.'});
         }else if(!bcrypt.compareSync(password,user.passwordHash)){
            return res.status(400).json({message: 'incorrect password'});
@@ -105,6 +105,31 @@ exports.verifyToken = async function(req,res) {
 
     }
 }
-exports.forgotPassword = async function(req,res){};
+exports.forgotPassword = async function(req,res){
+
+    try{
+        const {email} = req.body;
+
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(404).json({message: 'User with that email doesnot exist'});
+        }
+
+        const otp = Math.floor(1000 + Math.random() * 9000);
+        user.resetPasswordOtp = otp;
+        user.resetPasswordOtpExpires = Date.now() + 600000;
+
+        await user.save();
+
+        const response = await mailSender.sendMail(email,'password reset otp',`your otp for reset password is: ${otp}`);
+
+        if(response.statusCode === 500){
+
+        }
+    }catch(error){
+
+    }
+};
 exports.verifyPasswordResetOtp = async function(req,res){};
 exports.resetPassword = async function(req,res){};

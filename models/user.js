@@ -3,10 +3,7 @@ const { Schema, model } = require("mongoose");
 
 const userSchema = Schema({
     name: {type: String,required: true,trim: true},
-    // email: {type: String,required: true,trim: true,validate: {validator: (value)=>{
-    //     const re = /^-!#$%&'*+\/0-9=?A-Z^_a-z{|}~*@a-zA-Z0-9*\.a-zA-Z+$/;
-    //     return value.match(re);
-    // },message: "please enter a valid email address"}},
+    email: {type: String,required: true,trim: true},
     passwordHash: {type: String,required: true},
     street: String,
     apartment: String,
