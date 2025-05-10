@@ -2,9 +2,10 @@ const express = require('express');
 
 const {validationResult} = require('express-validator');
 const {User} = require('../models/user');
+const {Token} = require('../models/token')
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const { token } = require('morgan');
 const mailSender = require('../helpers/email_sender');
 
 exports.login =async function(req,res){
@@ -14,7 +15,8 @@ exports.login =async function(req,res){
 
         if(!user){
             return res.status(404).json({message: 'user not found \n check your email and try again.'});
-        }else if(!bcrypt.compareSync(password,user.passwordHash)){
+        }
+         if(!bcrypt.compareSync(password,user.passwordHash)){
            return res.status(400).json({message: 'incorrect password'});
         }
 
@@ -24,13 +26,12 @@ exports.login =async function(req,res){
             {expiresIn: '24h'},
         );
 
-        const refreshToken = jwt.sign(
-            {id: user.id,isAdmin: user.isAdmin},
-            process.env.ACCESS_TOKEN_SECRET,
+        const refreshToken = jwt.sign({id: user.id,isAdmin: user.isAdmin},  
+            process.env.REFRESH_TOKEN_SECRET,
             {expiresIn: '60d'},
         );
 
-        const Token = await Token.findOne({userId: user.id});
+        const token = await Token.findOne({userId: user.id});
 
         if(token) await token.deleteOne();
 
@@ -41,9 +42,11 @@ exports.login =async function(req,res){
         }).save();
 
         user.passwordHash = undefined;
-        return res.json({...user.doc,accessToken})
+        return res.json({...user._doc,accessToken})
 
     }catch(error){
+        console.log('JWT_SECRET:', process.env.REFRESH_TOKEN_SECRET);
+
         return res.status(500).json({type: error.name,message: error.message});
     }
 };

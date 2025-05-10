@@ -22,6 +22,6 @@ const userSchema = Schema({
         }
     ]
 });
-userSchema.index({email: 1},{unique: true});
+userSchema.index({email: 1},{unique: true,background: true});
 
 exports.User = model('user',userSchema); 
