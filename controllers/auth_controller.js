@@ -3,6 +3,8 @@ const express = require('express');
 const {validationResult} = require('express-validator');
 const {User} = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { token } = require('morgan');
 
 exports.login =async function(req,res){
     try{
@@ -15,6 +17,32 @@ exports.login =async function(req,res){
         }else if(!bcrypt.compareSync(password,user.passwordHash)){
            return res.status(400).json({message: 'incorrect password'});
         }
+
+        const accessToken = jwt.sign(
+            {id: user.id,isAdmin: user.isAdmin},
+            process.env.ACCESS_TOKEN_SECRET,
+            {expiresIn: '24h'},
+        );
+
+        const refreshToken = jwt.sign(
+            {id: user.id,isAdmin: user.isAdmin},
+            process.env.ACCESS_TOKEN_SECRET,
+            {expiresIn: '60d'},
+        );
+
+        const Token = await Token.findOne({userId: user.id});
+
+        if(token) await token.deleteOne();
+
+        await new Token({
+            userId: user.id,
+            accessToken,
+            refreshToken: refreshToken
+        }).save();
+
+        user.passwordHash = undefined;
+        return res.json({...user.doc,accessToken})
+
     }catch(error){
         return res.status(500).json({type: error.name,message: error.message});
     }
@@ -52,6 +80,31 @@ exports.register = async function(req,res){
         }
     }
 };
+
+exports.verifyToken = async function(req,res) {
+    try{
+        const accessToken = req.headers.Authorization;
+
+        if(!accessToken) return res.json(false);
+        accessToken = accessToken.replace('Bearer','').trim();
+
+        const token = await Token.findOne({accessToken});
+        if(!token) return res.json(false);
+
+        const tokenData = jwt.decode(token.refreshToken);
+
+        const user = await User.findById(tokenData.id);
+
+        if(!user) return res.json(false);
+
+        const isValid = jwt.verify(token.refreshToken,process.env.REFRESH_TOKEN_SECRET)
+
+        if(!isValid) return res.json(false);
+        return res.json(true);
+    }catch(error){
+
+    }
+}
 exports.forgotPassword = async function(req,res){};
 exports.verifyPasswordResetOtp = async function(req,res){};
 exports.resetPassword = async function(req,res){};
