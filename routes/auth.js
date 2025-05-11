@@ -15,18 +15,20 @@ const validateUser = [
 
 router.post('/login', authController.login);
 
-router.post('/register',validateUser, authController.register);
-
-router.post('/forgot-password',(req,res)=>
-    authController.forgotPassword()
+router.post('/register',validateUser,
+    authController.register
 );
 
-router.post('/verify-otp',(req,res)=>
-    authController.verifyPasswordResetOtp()
+router.post('/forgot-password',
+    authController.forgotPassword
 );
 
-router.post('/reset-password',(req,res)=>
-    authController.resetPassword()
+router.post('/verify-otp',
+    authController.verifyPasswordResetOtp
+);
+
+router.post('/reset-password',
+    authController.resetPassword
 );
 
 

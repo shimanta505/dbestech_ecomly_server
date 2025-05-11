@@ -14,7 +14,7 @@ exports.login =async function(req,res){
         const user = await User.findOne({email: email});
 
         if(!user){
-            return res.status(404).json({message: 'user not found \n check your email and try again.'});
+            return res.status(404).json({message: `user not found \n check your email and try again.`});
         }
          if(!bcrypt.compareSync(password,user.passwordHash)){
            return res.status(400).json({message: 'incorrect password'});
@@ -100,7 +100,7 @@ exports.verifyToken = async function(req,res) {
 
         if(!user) return res.json(false);
 
-        const isValid = jwt.verify(token.refreshToken,process.env.REFRESH_TOKEN_SECRET)
+        const isValid = jwt.verify(token.refreshToken,process.env.REFRESH_TOKEN_SECRET);
 
         if(!isValid) return res.json(false);
         return res.json(true);
@@ -126,12 +126,14 @@ exports.forgotPassword = async function(req,res){
         await user.save();
 
         const response = await mailSender.sendMail(email,'password reset otp',`your otp for reset password is: ${otp}`);
-
-        if(response.statusCode === 500){
-
+        if(response.status === 200){
+            return res.status(200).json({message: 'password reset otp sent to your email'});
+        }else{
+        return res.status(200).json({response});
         }
+        
     }catch(error){
-
+        return res.status(500).json({type: error.name,message: error.message});
     }
 };
 exports.verifyPasswordResetOtp = async function(req,res){};
