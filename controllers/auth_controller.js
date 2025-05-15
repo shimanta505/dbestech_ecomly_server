@@ -161,4 +161,18 @@ exports.verifyPasswordResetOtp = async function(req,res){
         return res.status(500).json({type: error.name,message: error.message});
     }
 };
-exports.resetPassword = async function(req,res){};
+exports.resetPassword = async function(req,res){
+
+    try{
+        const {email,newPassword} = req.body;
+
+        const user = await User.findOne({email});
+
+        if(!user) {
+            return res.status(404).res.json({message: 'user not found'}); 
+            
+        }
+    }catch(error){
+
+    }
+};
