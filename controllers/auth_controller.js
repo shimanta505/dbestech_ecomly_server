@@ -172,7 +172,19 @@ exports.resetPassword = async function(req,res){
             return res.status(404).res.json({message: 'user not found'}); 
             
         }
+
+        if(user.resetPasswordOtp !== 1){
+            return res.status(401).json({message: 'Confirm OTP before reseting password'});
+        }
+
+        user.passwordHash = bcrypt.hashSync(newPassword,8);
+        user.resetPasswordOtp = undefined;
+
+        await user.save();
+
     }catch(error){
+        console.error(error);
+        return res.status(200).json({type: error.name,message: error.message});
 
     }
 };
