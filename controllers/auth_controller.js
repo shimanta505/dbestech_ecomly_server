@@ -163,6 +163,16 @@ exports.verifyPasswordResetOtp = async function(req,res){
 };
 exports.resetPassword = async function(req,res){
 
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        const errorMessages = errors.array().map((error) => ({
+            field: error.path,
+            message: error.message,
+        }));
+        return res.status(400).json({errors: errorMessages});
+    }
+
     try{
         const {email,newPassword} = req.body;
 
