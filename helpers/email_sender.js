@@ -13,7 +13,7 @@ exports.sendMail = async(email,subject,body,successMessage,errorMessage)=>{
             }
         })
         console.log(email);
-        const mailOptions = {
+        const mailOptions = { 
             from: process.env.EMAIL,
             to: email,
             subject: subject,
