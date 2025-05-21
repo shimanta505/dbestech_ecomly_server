@@ -7,7 +7,7 @@ function authJwt(){
     return expjwt({
        secret: process.env.ACCESS_TOKEN_SECRET,
        algorithms: ['HS256'],
-       isRevoked: isRevoked,
+       isRevoked: false,
     }).unless({
         path: [
             `${API}/login`,
@@ -32,14 +32,14 @@ function authJwt(){
 async function isRevoked(req,jwt){
     const authHeader = req.header('Authorization');
 
-    if(!authHeader.startswith('Bearer')){
+    if(!authHeader.startsWith('Bearer ')){
         return true;
     }
 
-    const accessToken = authHeader.replace('Bearer','').trim();
+    const accessToken = authHeader.replace('Bearer', '').trim();
     const token = await Token.findOne({accessToken});
 
-    const adminRouteRegex = /^\/api\/v1//1;
+    const adminRouteRegex = /^\/api\/v1\/admin\//i;
    // const adminRouteRegex = 
 ;
 

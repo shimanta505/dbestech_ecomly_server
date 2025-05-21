@@ -12,9 +12,11 @@ async function errorHandler(error,req,res,next){
         try{
             const tokenHeader = req.header('Authorization');
             const accessToken = tokenHeader?.split(' ')[1];
-            let token =await Token.findOne({accessToken,refreshToken: {$exists: true}});
+            console.log(accessToken);
+            const token =await Token.findOne({accessToken}); // refreshToken: {$exists: true} 
 
             if(!token){
+                console.error('error handeler error');
                 return res.status(401).json({type: 'Unauthorized',message: 'Token doesnot exist'});
             }
 
@@ -42,6 +44,7 @@ async function errorHandler(error,req,res,next){
             return res.status(401).json({type: 'Unauthorized',message: refreshError.message});
         }
     }
+    return res.status(404).json({type: error.name,message: error.message});
 }
 
 module.exports = errorHandler;

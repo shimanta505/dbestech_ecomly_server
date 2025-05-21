@@ -22,11 +22,15 @@ const port = env.PORT;
 const api = env.API_URL;
 
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/users');
+const adminRouter = require('./routes/admin');
 
 app.use(`${api}/`,authRouter);
-app.get(`${api}/users`,(req,res)=>{
-    req.json({name: 'paul',org: 'Dbestech',age: 25});
-});
+app.use(`${api}/users`,userRouter);
+app.use(`${api}/admin`,adminRouter);
+
+
+
 
 
 mongoose.set('debug',true);
