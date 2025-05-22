@@ -23,11 +23,11 @@ const api = env.API_URL;
 
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/users');
-const adminRouter = require('./routes/admin');
+//const adminRouter = require('./routes/admin');
 
 app.use(`${api}/`,authRouter);
 app.use(`${api}/users`,userRouter);
-app.use(`${api}/admin`,adminRouter);
+//app.use(`${api}/admin`,adminRouter);
 
 
 
