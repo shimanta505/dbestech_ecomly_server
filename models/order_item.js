@@ -7,4 +7,4 @@ const orderItemSchema = Schema({
     selectedColor: String,
 });
 
-exports.OrderItem = model('OrderItem',orderItemSchema);
+exports.OrderItem = model('OrderItem',orderItemSchema); 
