@@ -9,4 +9,7 @@ const categorySchema = Schema(
     }
 );
 
+categorySchema.set('toObject',{virtuals: true});
+categorySchema.set('toJson',{virtuals: true});
+
 exports.Category = model('Category',categorySchema);
